@@ -2,7 +2,6 @@ import random
 
 import pygame
 
-
 from config import *
 from src.entitie.Obs import Obs
 from src.entitie.Space import Space
@@ -13,7 +12,7 @@ from src.entitie.Truck import Truck
 class EnvMap:
     def generate_map_field(self, x, y):
         random_index = random.randint(0, 100)
-        if random_index == -1:
+        if random_index < 5:
             return Trash(x, y)
         elif random_index < 80:
             return Space(x, y)
@@ -25,7 +24,6 @@ class EnvMap:
         for x in range(DEFAULT_MAP_SIZE):
             temp_map.append([self.generate_map_field(x, y) for y in range(16)])
 
-        temp_map[12][14] = Trash(12, 14)
         self.map = temp_map
 
     def import_map(self, map):
