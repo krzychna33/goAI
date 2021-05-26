@@ -44,6 +44,7 @@ class EnvMap:
                 no = None
                 if o.__class__.__name__ == 'Truck':
                     no = Truck(x, y)
+                    no.direction = o.direction
                     newEnvMap.truck = no
 
                 if o.__class__.__name__ == 'Trash':
@@ -125,18 +126,11 @@ class PathFinder():
 
         altState3 = state.get_map_copy()
         t3 = altState3.map[truck.abstractX][truck.abstractY]
-        t3.rotate_right()
         t3.move(altState3.map)
-
-        altState4 = state.get_map_copy()
-        t4 = altState4.map[truck.abstractX][truck.abstractY]
-        t4.rotate_left()
-        t4.move(altState4.map)
 
         pack.append([R_UP, altState1])
         pack.append([R_DOWN, altState2])
-        pack.append([R_RIGHT, altState3])
-        pack.append([R_LEFT, altState4])
+        pack.append([NOTHING, altState3])
 
         return pack
 
@@ -145,6 +139,9 @@ class PathFinder():
             for y in range(DEFAULT_MAP_SIZE):
                 a = s1.map[x][y]
                 b = s2.map[x][y]
+                if a.__class__.__name__ == 'Truck' and b.__class__.__name__ == 'Truck':
+                    if a.direction != b.direction:
+                        return False
                 if a.__class__.__name__ != b.__class__.__name__:
                     return False
         return True
@@ -202,10 +199,6 @@ class Environment:
             self.envMap.truck.rotate_up()
         if key == pygame.K_s:
             self.envMap.truck.rotate_down()
-        if key == pygame.K_d:
-            self.envMap.truck.rotate_right()
-        if key == pygame.K_a:
-            self.envMap.truck.rotate_left()
         if key == pygame.K_o:
             actions = self.pathFinder.graphsearch(self.envMap.get_map_copy())
             self.navigate(actions)
@@ -217,18 +210,14 @@ class Environment:
                 action = actions.pop()
                 next = pygame.time.get_ticks() + 300
                 self.update()
+                ev=None
                 if action == R_UP:
                     ev = pygame.event.Event(pygame.KEYDOWN, {"key": pygame.K_w})
                 if action == R_DOWN:
                     ev = pygame.event.Event(pygame.KEYDOWN, {"key": pygame.K_s})
 
-                if action == R_RIGHT:
-                    ev = pygame.event.Event(pygame.KEYDOWN, {"key": pygame.K_d})
-
-                if action == R_LEFT:
-                    ev = pygame.event.Event(pygame.KEYDOWN, {"key": pygame.K_a})
-
-                pygame.event.post(ev)
+                if ev:
+                    pygame.event.post(ev)
 
                 ev = pygame.event.Event(pygame.KEYDOWN, {"key": pygame.K_SPACE})
                 pygame.event.post(ev)

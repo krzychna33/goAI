@@ -11,7 +11,7 @@ class Truck:
     def __init__(self, x=0, y=0):
         self.abstractX = x
         self.abstractY = y
-        self.direction = R_RIGHT
+        self.direction = 90
         asset_path = os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'garbage-truck.png')
         self.backAsset = pygame.transform.scale(pygame.image.load(asset_path), (DEFAULT_ASSET_SIZE, DEFAULT_ASSET_SIZE))
         self.asset = pygame.transform.scale(pygame.image.load(asset_path), (DEFAULT_ASSET_SIZE, DEFAULT_ASSET_SIZE))
@@ -20,33 +20,22 @@ class Truck:
         self.velocity = DEFAULT_ASSET_SIZE
 
     def rotate_up(self):
-        self.asset = self.backAsset
         self.asset = pygame.transform.rotate(self.asset, 90)
-        self.direction = R_UP
+        self.direction = (self.direction + 90) % 360
 
     def rotate_down(self):
-        self.asset = self.backAsset
         self.asset = pygame.transform.rotate(self.asset, -90)
-        self.direction = R_DOWN
-
-    def rotate_right(self):
-        self.asset = self.backAsset
-        self.direction = R_RIGHT
-
-    def rotate_left(self):
-        self.asset = self.backAsset
-        self.asset = pygame.transform.rotate(self.asset, 180)
-        self.asset = pygame.transform.flip(self.asset, False, True)
-        self.direction = R_LEFT
+        self.direction = (self.direction - 90) % 360
 
     def move(self, map):
-        if self.direction == R_UP:
+        print(self.direction)
+        if self.direction == 180:
             self.move_up(map)
-        if self.direction == R_DOWN:
+        if self.direction == 0:
             self.move_down(map)
-        if self.direction == R_RIGHT:
+        if self.direction == 90:
             self.move_right(map)
-        if self.direction == R_LEFT:
+        if self.direction == 270:
             self.move_left(map)
 
     def replace(self, map, oldX, oldY):
